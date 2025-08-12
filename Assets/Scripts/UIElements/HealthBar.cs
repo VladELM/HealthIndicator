@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Transform _fillArea;
+    [SerializeField] private Health _health;
 
     private Slider _slider;
     private bool _isFillAreaEnabled;
@@ -13,6 +15,22 @@ public class HealthBar : MonoBehaviour
     {
         _slider = GetComponent<Slider>();
         _isFillAreaEnabled = true;
+    }
+
+    private void OnEnable()
+    {
+        _health.MaxHealthAssigned += SetStartHealthValue;
+        _health.HealthChanged += SetHealthValue;
+        _health.Alived += ToggleFillArea;
+        _health.Dead += ToggleFillArea;
+    }
+
+    private void OnDisable()
+    {
+        _health.MaxHealthAssigned -= SetStartHealthValue;
+        _health.HealthChanged -= SetHealthValue;
+        _health.Alived -= ToggleFillArea;
+        _health.Dead -= ToggleFillArea;
     }
 
     public void SetStartHealthValue(int healthMax)

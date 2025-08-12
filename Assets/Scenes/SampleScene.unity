@@ -362,6 +362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fillArea: {fileID: 1056913035}
+  _health: {fileID: 1751971843}
 --- !u!1 &190385129
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,6 +720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e225892a98080f64da6099b10fd4e45e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _health: {fileID: 1751971843}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,6 +960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fcc6671f9ffeda449fa0eb9fc594ace, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _health: {fileID: 1751971843}
   _deathString: You died !
   _aliveString: You alive !
 --- !u!1 &774338967
@@ -1516,7 +1519,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1751971847}
-  - component: {fileID: 1751971846}
   - component: {fileID: 1751971845}
   - component: {fileID: 1751971844}
   - component: {fileID: 1751971843}
@@ -1552,6 +1554,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8b3f914c12b11449227b038350c4b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damageButton: {fileID: 980672111}
   _damage: 20
 --- !u!114 &1751971845
 MonoBehaviour:
@@ -1565,24 +1568,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ed0e70430f337941bf5d865ac8cb3e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _healPoints: 10
---- !u!114 &1751971846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1751971842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb4395a65ae803540a05ffb26c056984, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _damageButton: {fileID: 980672111}
   _healButton: {fileID: 1619576255}
-  _healthBar: {fileID: 144500412}
-  _healthBarText: {fileID: 442746487}
-  _notifyMessage: {fileID: 551522933}
+  _healPoints: 10
 --- !u!4 &1751971847
 Transform:
   m_ObjectHideFlags: 0

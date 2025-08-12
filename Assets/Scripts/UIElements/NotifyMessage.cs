@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(TMP_Text))]
 public class NotifyMessage : MonoBehaviour
 {
+    [SerializeField] private Health _health;
     [SerializeField] private string _deathString;
     [SerializeField] private string _aliveString;
 
@@ -15,6 +16,20 @@ public class NotifyMessage : MonoBehaviour
     {
         _text = GetComponent<TMP_Text>();
         _isAlive = true;
+    }
+
+    private void OnEnable()
+    {
+        _health.HealthStarted += AssigneStartMessage;
+        _health.Alived += RewriteMessage;
+        _health.Dead += RewriteMessage;
+    }
+
+    private void OnDisable()
+    {
+        _health.HealthStarted -= AssigneStartMessage;
+        _health.Alived -= RewriteMessage;
+        _health.Dead -= RewriteMessage;
     }
 
     public void AssigneStartMessage()
