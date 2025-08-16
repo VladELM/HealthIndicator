@@ -5,6 +5,7 @@ using UnityEngine;
 public class NotifyMessage : MonoBehaviour
 {
     [SerializeField] private Health _health;
+    [SerializeField] private HealthDisplayer _healthDisplayer;
     [SerializeField] private string _deathString;
     [SerializeField] private string _aliveString;
 
@@ -21,15 +22,15 @@ public class NotifyMessage : MonoBehaviour
     private void OnEnable()
     {
         _health.HealthStarted += AssigneStartMessage;
-        _health.Alived += RewriteMessage;
-        _health.Dead += RewriteMessage;
+        _healthDisplayer.Alived += RewriteMessage;
+        _healthDisplayer.Dead += RewriteMessage;
     }
 
     private void OnDisable()
     {
         _health.HealthStarted -= AssigneStartMessage;
-        _health.Alived -= RewriteMessage;
-        _health.Dead -= RewriteMessage;
+        _healthDisplayer.Alived -= RewriteMessage;
+        _healthDisplayer.Dead -= RewriteMessage;
     }
 
     public void AssigneStartMessage()

@@ -5,6 +5,7 @@ using UnityEngine;
 public class HealthBarText : MonoBehaviour
 {
     [SerializeField] private Health _health;
+    [SerializeField] private HealthDisplayer _healthDisplayer;
 
     private TMP_Text _textMeshPro;
     private string _textPattern;
@@ -17,13 +18,13 @@ public class HealthBarText : MonoBehaviour
     private void OnEnable()
     {
         _health.MaxHealthAssigned += SetTextPattern;
-        _health.HealthChanged += SetText;
+        _healthDisplayer.HealthChanged += SetText;
     }
 
     private void OnDisable()
     {
         _health.MaxHealthAssigned -= SetTextPattern;
-        _health.HealthChanged -= SetText;
+        _healthDisplayer.HealthChanged -= SetText;
     }
 
     public void SetTextPattern(int maxValue)
