@@ -10,7 +10,7 @@ public class HealthDisplayer : MonoBehaviour
     [SerializeField] private float _healingTime;
     [SerializeField] private float _damagingTime;
 
-    private int _currentValue;
+    private int _currentHealth;
     private int _targetHealth;
     private Coroutine _healCoroutine;
     private Coroutine _damageCoroutine;
@@ -25,8 +25,6 @@ public class HealthDisplayer : MonoBehaviour
 
     private void Awake()
     {
-        _health.HealthHealed += StartHealing;
-        _health.HealthDamaged += StartDamaging;
         _healingDelay = new WaitForSeconds(_healingTime);
         _damagingDelay = new WaitForSeconds(_damagingTime);
         _isHealing = false;
@@ -35,17 +33,24 @@ public class HealthDisplayer : MonoBehaviour
 
     private void OnEnable()
     {
+        _health.MaxHealthAssigned += AssignStartHealth;
         _health.HealthHealed += StartHealing;
         _health.HealthDamaged += StartDamaging;
     }
 
     private void OnDisable()
     {
+        _health.MaxHealthAssigned -= AssignStartHealth;
         _health.HealthHealed -= StartHealing;
         _health.HealthHealed -= StartDamaging;
     }
 
-    public void StartHealing(int currentValue, int targetHealth)
+    private void AssignStartHealth(int startHealth)
+    {
+        _currentHealth = startHealth;
+    }
+
+    private void StartHealing(int targetHealth)
     {
         if (_isHealing)
             StopCoroutine(_healCoroutine);
@@ -59,12 +64,11 @@ public class HealthDisplayer : MonoBehaviour
         if (_isHealing == false)
             _isHealing = true;
 
-        _currentValue = currentValue;
         _targetHealth = targetHealth;
         _healCoroutine = StartCoroutine(Healing());
     }
 
-    public void StartDamaging(int currentValue, int targetHealth)
+    private void StartDamaging(int targetHealth)
     {
         if (_isHealing)
         {
@@ -78,7 +82,6 @@ public class HealthDisplayer : MonoBehaviour
         if (_isDamaging == false)
             _isDamaging = true;
 
-        _currentValue = currentValue;
         _targetHealth = targetHealth;
         _damageCoroutine = StartCoroutine(Damaging());
     }
@@ -89,13 +92,13 @@ public class HealthDisplayer : MonoBehaviour
         {
             yield return _healingDelay;
 
-            if (_currentValue == 0)
+            if (_currentHealth == 0)
                 Alived?.Invoke();
 
-            _currentValue += _healingValue;
-            HealthChanged?.Invoke(_currentValue);
+            _currentHealth += _healingValue;
+            HealthChanged?.Invoke(_currentHealth);
 
-            if (_currentValue == _targetHealth)
+            if (_currentHealth == _targetHealth)
                 break;
         }
     }
@@ -106,13 +109,13 @@ public class HealthDisplayer : MonoBehaviour
         {
             yield return _damagingDelay;
 
-            _currentValue -= _damagingValue;
-            HealthChanged?.Invoke(_currentValue);
+            _currentHealth -= _damagingValue;
+            HealthChanged?.Invoke(_currentHealth);
 
-            if (_currentValue == 0)
+            if (_currentHealth == 0)
                 Dead?.Invoke();
 
-            if (_currentValue == _targetHealth)
+            if (_currentHealth == _targetHealth)
                 break;
         }
     }

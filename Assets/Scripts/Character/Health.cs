@@ -9,37 +9,37 @@ public class Health : MonoBehaviour
     [SerializeField] private float _healingTime;
     [SerializeField] private float _damagingTime;
 
-    public event Action<int, int> HealthHealed;
-    public event Action<int, int> HealthDamaged;
+    private int _maxHealthValue;
+
+    public event Action<int> HealthHealed;
+    public event Action<int> HealthDamaged;
     public event Action<int> MaxHealthAssigned;
     public event Action HealthStarted;
 
-    public int MaxHealthValue {get; private set;}
-
     private void Awake()
     {
-        MaxHealthValue = _health;
+        _maxHealthValue = _health;
     }
 
     private void Start()
     {
-        MaxHealthAssigned?.Invoke(MaxHealthValue);
+        MaxHealthAssigned?.Invoke(_maxHealthValue);
         HealthStarted?.Invoke();
     }
 
     public void Heal(int healPoints)
     {
-        if (_health < MaxHealthValue)
+        if (_health < _maxHealthValue)
         {
-            if ((_health + healPoints) <= MaxHealthValue)
+            if ((_health + healPoints) <= _maxHealthValue)
             {
-                HealthHealed?.Invoke(_health, _health + healPoints);
+                HealthHealed?.Invoke(_health + healPoints);
                 _health += healPoints;
             }
-            else if (_health + healPoints > MaxHealthValue)
+            else if (_health + healPoints > _maxHealthValue)
             {
-                HealthHealed?.Invoke(_health, MaxHealthValue);
-                _health = MaxHealthValue;
+                HealthHealed?.Invoke(_maxHealthValue);
+                _health = _maxHealthValue;
             }
         }
     }
@@ -52,12 +52,12 @@ public class Health : MonoBehaviour
             {
                 if (_health >= incomingDamage)
                 {
-                    HealthDamaged?.Invoke(_health, _health - incomingDamage);
+                    HealthDamaged?.Invoke(_health - incomingDamage);
                     _health -= incomingDamage;
                 }
                 else if (_health < incomingDamage)
                 {
-                    HealthDamaged?.Invoke(_health, 0);
+                    HealthDamaged?.Invoke(0);
                     _health = 0;
                 }
             }
