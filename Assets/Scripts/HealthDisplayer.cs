@@ -5,115 +5,61 @@ using UnityEngine;
 public class HealthDisplayer : MonoBehaviour
 {
     [SerializeField] private Health _health;
-    [SerializeField] private int _healingValue;
-    [SerializeField] private int _damagingValue;
-    [SerializeField] private float _healingTime;
-    [SerializeField] private float _damagingTime;
+    [SerializeField] private float _changingTime;
+    [SerializeField] private float _changingValue;
 
-    private int _currentHealth;
-    private int _targetHealth;
-    private Coroutine _healCoroutine;
-    private Coroutine _damageCoroutine;
-    private WaitForSeconds _healingDelay;
-    private WaitForSeconds _damagingDelay;
-    private bool _isHealing;
-    private bool _isDamaging;
+    private bool _isChanging;
+    private float _currentHealth;
+    private float _targetHealth;
+    private WaitForSeconds _changingDelay;
+    private Coroutine _coroutine;
 
-    public event Action<int> HealthChanged;
-    public event Action Alived;
-    public event Action Dead;
+    public event Action<float> HealthChanged;
 
     private void Awake()
     {
-        _healingDelay = new WaitForSeconds(_healingTime);
-        _damagingDelay = new WaitForSeconds(_damagingTime);
-        _isHealing = false;
-        _isDamaging = false;
+        _changingDelay = new WaitForSeconds(_changingTime);
+        _isChanging = false;
     }
 
     private void OnEnable()
     {
         _health.MaxHealthAssigned += AssignStartHealth;
-        _health.HealthHealed += StartHealing;
-        _health.HealthDamaged += StartDamaging;
+        _health.HealthChanged += StartChangeHealth;
     }
 
     private void OnDisable()
     {
         _health.MaxHealthAssigned -= AssignStartHealth;
-        _health.HealthHealed -= StartHealing;
-        _health.HealthHealed -= StartDamaging;
+        _health.HealthChanged -= StartChangeHealth;
     }
 
-    private void AssignStartHealth(int startHealth)
+    private void AssignStartHealth(float startHealth)
     {
         _currentHealth = startHealth;
     }
 
-    private void StartHealing(int targetHealth)
+    private void StartChangeHealth(float targetHealth)
     {
-        if (_isHealing)
-            StopCoroutine(_healCoroutine);
-
-        if (_isDamaging)
+        if (_isChanging)
         {
-            _isDamaging = false;
-            StopCoroutine(_damageCoroutine);
+            _isChanging = false;
+            StopCoroutine(_coroutine);
         }
 
-        if (_isHealing == false)
-            _isHealing = true;
-
         _targetHealth = targetHealth;
-        _healCoroutine = StartCoroutine(Healing());
+        _isChanging = true;
+        _coroutine = StartCoroutine(HealthChanging(_changingDelay));
     }
 
-    private void StartDamaging(int targetHealth)
-    {
-        if (_isHealing)
-        {
-            _isHealing = false;
-            StopCoroutine(_healCoroutine);
-        }
-
-        if (_isDamaging)
-            StopCoroutine(_damageCoroutine);
-
-        if (_isDamaging == false)
-            _isDamaging = true;
-
-        _targetHealth = targetHealth;
-        _damageCoroutine = StartCoroutine(Damaging());
-    }
-
-    private IEnumerator Healing()
+    private IEnumerator HealthChanging(WaitForSeconds delay)
     {
         while (enabled)
         {
-            yield return _healingDelay;
+            yield return delay;
 
-            if (_currentHealth == 0)
-                Alived?.Invoke();
-
-            _currentHealth += _healingValue;
+            _currentHealth = Mathf.MoveTowards(_currentHealth, _targetHealth, _changingValue * Time.deltaTime);
             HealthChanged?.Invoke(_currentHealth);
-
-            if (_currentHealth == _targetHealth)
-                break;
-        }
-    }
-
-    private IEnumerator Damaging()
-    {
-        while (enabled)
-        {
-            yield return _damagingDelay;
-
-            _currentHealth -= _damagingValue;
-            HealthChanged?.Invoke(_currentHealth);
-
-            if (_currentHealth == 0)
-                Dead?.Invoke();
 
             if (_currentHealth == _targetHealth)
                 break;

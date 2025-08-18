@@ -1,11 +1,11 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(TMP_Text))]
-public class HealthBarText : MonoBehaviour
+public class HealthText : MonoBehaviour
 {
-    [SerializeField] private Health _health;
-    [SerializeField] private HealthDisplayer _healthDisplayer;
+    [SerializeField] protected Health _health;
 
     private TMP_Text _textMeshPro;
     private string _textPattern;
@@ -18,23 +18,23 @@ public class HealthBarText : MonoBehaviour
     private void OnEnable()
     {
         _health.MaxHealthAssigned += SetTextPattern;
-        _healthDisplayer.HealthChanged += SetText;
+        _health.HealthChanged += SetText;
     }
 
     private void OnDisable()
     {
         _health.MaxHealthAssigned -= SetTextPattern;
-        _healthDisplayer.HealthChanged -= SetText;
+        _health.HealthChanged -= SetText;
     }
 
-    public void SetTextPattern(int maxValue)
+    protected void SetTextPattern(float maxValue)
     {
         _textPattern = " / " + maxValue.ToString();
         SetText(maxValue);
     }
 
-    public void SetText(int value)
+    protected void SetText(float value)
     {
-        _textMeshPro.text = value + _textPattern;
+        _textMeshPro.text = Convert.ToInt32(value) + _textPattern;
     }
 }

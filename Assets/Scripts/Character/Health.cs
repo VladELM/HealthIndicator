@@ -3,22 +3,19 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] protected int _health;
-    [SerializeField] private int _healingValue;
-    [SerializeField] private int _damagingValue;
-    [SerializeField] private float _healingTime;
-    [SerializeField] private float _damagingTime;
+    [SerializeField] protected float _healthValue;
 
-    private int _maxHealthValue;
+    private float _maxHealthValue;
 
-    public event Action<int> HealthHealed;
-    public event Action<int> HealthDamaged;
-    public event Action<int> MaxHealthAssigned;
+    public event Action<float> HealthChanged;
+    public event Action<float> MaxHealthAssigned;
     public event Action HealthStarted;
+    public event Action Alived;
+    public event Action Dead;
 
     private void Awake()
     {
-        _maxHealthValue = _health;
+        _maxHealthValue = _healthValue;
     }
 
     private void Start()
@@ -29,17 +26,22 @@ public class Health : MonoBehaviour
 
     public void Heal(int healPoints)
     {
-        if (_health < _maxHealthValue)
+        if (_healthValue < _maxHealthValue)
         {
-            if ((_health + healPoints) <= _maxHealthValue)
+            if (_healthValue == 0)
+                Alived?.Invoke();
+
+            float healthValue = _healthValue + healPoints;
+
+            if (healthValue <= _maxHealthValue)
             {
-                HealthHealed?.Invoke(_health + healPoints);
-                _health += healPoints;
+                HealthChanged?.Invoke(_healthValue + healPoints);
+                _healthValue += healPoints;
             }
-            else if (_health + healPoints > _maxHealthValue)
+            else if (healthValue > _maxHealthValue)
             {
-                HealthHealed?.Invoke(_maxHealthValue);
-                _health = _maxHealthValue;
+                HealthChanged?.Invoke(_maxHealthValue);
+                _healthValue = _maxHealthValue;
             }
         }
     }
@@ -48,18 +50,21 @@ public class Health : MonoBehaviour
     {
         if (incomingDamage > 0)
         {
-            if (_health != 0)
+            if (_healthValue != 0)
             {
-                if (_health >= incomingDamage)
+                if (_healthValue >= incomingDamage)
                 {
-                    HealthDamaged?.Invoke(_health - incomingDamage);
-                    _health -= incomingDamage;
+                    HealthChanged?.Invoke(_healthValue - incomingDamage);
+                    _healthValue -= incomingDamage;
                 }
-                else if (_health < incomingDamage)
+                else if (_healthValue < incomingDamage)
                 {
-                    HealthDamaged?.Invoke(0);
-                    _health = 0;
+                    HealthChanged?.Invoke(0);
+                    _healthValue = 0;
                 }
+
+                if (_healthValue == 0)
+                    Dead?.Invoke();
             }
         }
     }
