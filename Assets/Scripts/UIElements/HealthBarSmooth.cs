@@ -1,12 +1,13 @@
-using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class HealthDisplayer : MonoBehaviour
+[RequireComponent(typeof(Image))]
+public class HealthBarSmooth : HealthView
 {
-    [SerializeField] private Health _health;
     [SerializeField] private float _changingTime;
     [SerializeField] private float _changingValue;
+    [SerializeField] private float _multiplier;
 
     private bool _isChanging;
     private float _currentHealth;
@@ -14,29 +15,21 @@ public class HealthDisplayer : MonoBehaviour
     private WaitForSeconds _changingDelay;
     private Coroutine _coroutine;
 
-    public event Action<float> HealthChanged;
+    private Image _image;
 
     private void Awake()
     {
-        _changingDelay = new WaitForSeconds(_changingTime);
-        _isChanging = false;
+        _image = GetComponent<Image>();
     }
 
-    private void OnEnable()
+    protected override void OnMaxHealthValueAssigned(float value)
     {
-        _health.MaxHealthAssigned += AssignStartHealth;
-        _health.HealthChanged += StartChangeHealth;
+
     }
 
-    private void OnDisable()
+    protected override void OnHealthValueChanged(float value)
     {
-        _health.MaxHealthAssigned -= AssignStartHealth;
-        _health.HealthChanged -= StartChangeHealth;
-    }
-
-    private void AssignStartHealth(float startHealth)
-    {
-        _currentHealth = startHealth;
+        StartChangeHealth(value);
     }
 
     private void StartChangeHealth(float targetHealth)
@@ -58,8 +51,10 @@ public class HealthDisplayer : MonoBehaviour
         {
             yield return delay;
 
-            _currentHealth = Mathf.MoveTowards(_currentHealth, _targetHealth, _changingValue * Time.deltaTime);
-            HealthChanged?.Invoke(_currentHealth);
+            if (_targetHealth == 0)
+                _image.fillAmount = 0;
+            else if (_targetHealth > 0)
+                _image.fillAmount = Mathf.MoveTowards(_image.fillAmount * _multiplier, _targetHealth, _changingValue * Time.deltaTime) / _multiplier;
 
             if (_currentHealth == _targetHealth)
                 break;

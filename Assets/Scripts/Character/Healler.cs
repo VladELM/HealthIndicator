@@ -1,31 +1,12 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(Health))]
-public class Healler : MonoBehaviour
+public class Healler : HealthChanger
 {
-    [SerializeField] private Button _healButton;
     [SerializeField] private int _healPoints;
-    
-    private Health _health;
 
-    private void Awake()
+    protected override void HandleClickButton()
     {
-        _health = GetComponent<Health>();
-    }
-
-    private void OnEnable()
-    {
-        _healButton.onClick.AddListener(HealCharacter);
-    }
-
-    private void OnDisable()
-    {
-        _healButton?.onClick.RemoveListener(HealCharacter);
-    }
-
-    public void HealCharacter()
-    {
-        _health.Heal(_healPoints);
+        Health.Heal(_healPoints);
     }
 }

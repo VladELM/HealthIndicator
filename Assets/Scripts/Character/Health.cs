@@ -3,45 +3,40 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] protected float _healthValue;
+    [SerializeField] protected float Value;
 
-    private float _maxHealthValue;
+    private float _maxValue;
 
-    public event Action<float> HealthChanged;
-    public event Action<float> MaxHealthAssigned;
-    public event Action HealthStarted;
-    public event Action Alived;
-    public event Action Dead;
+    public event Action<float> ValueChanged;
+    public event Action<float> MaxValueAssigned;
+    public event Action Started;
 
     private void Awake()
     {
-        _maxHealthValue = _healthValue;
+        _maxValue = Value;
     }
 
     private void Start()
     {
-        MaxHealthAssigned?.Invoke(_maxHealthValue);
-        HealthStarted?.Invoke();
+        MaxValueAssigned?.Invoke(_maxValue);
+        Started?.Invoke();
     }
 
     public void Heal(int healPoints)
     {
-        if (_healthValue < _maxHealthValue)
+        if (Value < _maxValue)
         {
-            if (_healthValue == 0)
-                Alived?.Invoke();
+            float healthValue = Value + healPoints;
 
-            float healthValue = _healthValue + healPoints;
-
-            if (healthValue <= _maxHealthValue)
+            if (healthValue <= _maxValue)
             {
-                HealthChanged?.Invoke(_healthValue + healPoints);
-                _healthValue += healPoints;
+                ValueChanged?.Invoke(Value + healPoints);
+                Value += healPoints;
             }
-            else if (healthValue > _maxHealthValue)
+            else if (healthValue > _maxValue)
             {
-                HealthChanged?.Invoke(_maxHealthValue);
-                _healthValue = _maxHealthValue;
+                ValueChanged?.Invoke(_maxValue);
+                Value = _maxValue;
             }
         }
     }
@@ -50,21 +45,18 @@ public class Health : MonoBehaviour
     {
         if (incomingDamage > 0)
         {
-            if (_healthValue != 0)
+            if (Value != 0)
             {
-                if (_healthValue >= incomingDamage)
+                if (Value >= incomingDamage)
                 {
-                    HealthChanged?.Invoke(_healthValue - incomingDamage);
-                    _healthValue -= incomingDamage;
+                    ValueChanged?.Invoke(Value - incomingDamage);
+                    Value -= incomingDamage;
                 }
-                else if (_healthValue < incomingDamage)
+                else if (Value < incomingDamage)
                 {
-                    HealthChanged?.Invoke(0);
-                    _healthValue = 0;
+                    ValueChanged?.Invoke(0);
+                    Value = 0;
                 }
-
-                if (_healthValue == 0)
-                    Dead?.Invoke();
             }
         }
     }
